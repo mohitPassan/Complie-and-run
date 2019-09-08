@@ -1,0 +1,55 @@
+#!/bin/bash
+# Mohit 07/09/2019
+# Compiles and runs the code which I am working on
+
+# Getting the file
+if [ $# = 0 ]
+then
+	ls -l *.cpp 2> ifFound.txt > temp.txt
+	linesInFile=`cat ifFound.txt | wc -l`
+	if [ $linesInFile != 0 ]
+	then
+		echo File not found. Compilation terminated.
+		rm ifFound.txt
+		rm temp.txt
+		exit
+	fi
+	fileName=`ls -l *.cpp --sort=time | head -1 | awk '{print $NF}'`
+elif [ $# = 1 ]
+then
+	fileName=$1
+else
+	echo Wrong input arguments. Compilation terminated
+	exit
+fi
+
+# Compiling the file. If there are any errors we send them to error.txt
+g++ $fileName 2> errors.txt
+
+# Check for any errors
+linesInErrorFile=`cat errors.txt | wc -l`
+
+if [ $linesInErrorFile != 0 ]
+then
+	echo Errors:
+	cat errors.txt
+	rm errors.txt
+	exit
+else
+	echo $fileName compiled. Now running
+	./a.out
+fi
+
+# Deleting files
+if [ -f errors.txt ]
+then
+	rm errors.txt
+fi
+if [ -f ifFound.txt ]
+then
+        rm ifFound.txt
+fi
+if [ -f temp.txt ]
+then
+        rm temp.txt
+fi
